@@ -1,0 +1,14 @@
+<html>
+    <head></head>
+    <body>
+        <h1>Checking your invitation...</h1>
+        <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('//localhost:5000');
+
+            socket.on('permission.message', function (data) {
+                document.querySelector('h1').innerHTML = data;
+            });
+        </script>
+    </body>
+</html>

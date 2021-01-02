@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <hr />
+            <form id="form" class="row">
+                <div class="col-md-10">
+                    <input class="form-control" id="name" placeholder="Who are you?" />
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary form-control" type="submit">Send</button>
+                </div>
+            </form>
+            <div id="messages"></div>
+        </div>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        var socket = io('http://localhost:5000');
+
+        socket.on('user.joined', function (data) {
+            $('#messages').prepend(`
+                <p>
+                    <hr />
+                    ${data.name} is finally here.
+                </p>
+            `);
+        });
+
+        $(function () {
+            $('#form').on('submit', function (e) {
+                e.preventDefault();
+
+                var name = $('#name').val();
+
+                socket.emit('user.join', {
+                    name: name
+                });
+
+                $('#messages').prepend(`<p>
+                    <hr />
+                    Hi ${name}!
+                </p>`);
+            });
+        });
+        </script>
+    </body>
+</html>

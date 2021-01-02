@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+
+        <div class="container">
+            <h1>My Rooms</h1>
+            <ul id="messages"></ul>
+        </div>
+
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+
+        var socket = io('http://localhost:5000');
+
+        socket.on('list.rooms.response', function (rooms) {
+            $('#messages').html('');
+            rooms.forEach(function (room) {
+                $('#messages').append(`<li>${room} | <a href="#" data-id="${room}">leave</a></li>`);
+            });
+        });
+
+        $(function () {
+            socket.emit('list.rooms');
+            $('#messages').delegate('a', 'click', function () {
+                socket.emit('leave.room', $(this).data('id'));
+                socket.emit('list.rooms');
+            });
+        });
+        </script>
+    </body>
+</html>

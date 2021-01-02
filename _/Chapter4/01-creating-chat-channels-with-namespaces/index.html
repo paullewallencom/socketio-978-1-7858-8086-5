@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row"></div>
+        </div>
+
+        <script type="text/tpl" id="namespace-group-tpl">
+            <div class="col-md-6">
+                <h1>Group ${i}</h1>
+                <form class="message-form">
+                    <p>
+                        <label>Username</label>
+                        <input class="form-control input-username" />
+                    </p>
+                    <p>
+                        <label>Message</label>
+                        <textarea class="form-control input-message"></textarea>
+                    </p>
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </form>
+                <div class="messages"></div>
+            </div>
+        </script>
+
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+
+        function createNamespace (i, template) {
+            var socket = io(`http://localhost:5000/group-${i}`),
+                $el = $(template.replace(/\${i}/g, (i + 1)));
+
+            $('.row').append($el);
+
+            $el.find('.message-form').bind('submit', function (e) {
+                e.preventDefault();
+                socket.emit('message.send', {
+                    message: $el.find('.input-message').val(),
+                    username: $el.find('.input-username').val()
+                });
+            });
+
+            // Update the users count
+            socket.on('message.sent', function (data) {
+                $el.find('.messages').prepend(`
+                    <div>
+                        <hr />
+                        <div><strong>${data.username}</strong></div>
+                        <p>${data.message}</p>
+                    </div>
+                `);
+            });
+        }
+
+        $(function () {
+            var template = $('#namespace-group-tpl').text();
+
+            for (var i = 0; i < 2; i++) {
+                createNamespace(i, template);
+            }
+
+        });
+        </script>
+    </body>
+</html>

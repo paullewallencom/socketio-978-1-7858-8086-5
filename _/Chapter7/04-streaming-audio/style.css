@@ -1,0 +1,17 @@
+button {
+    font-size: 2em;
+    border: 0px;
+    color: #FFF;
+}
+
+button.play {
+    background: green;
+}
+
+button.stop {
+    background: red;
+}
+
+button.muted {
+    background: #CCC;
+}

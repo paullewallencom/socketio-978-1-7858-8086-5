@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row bg-primary">
+                <div class="col-md-12">
+                    <h1></h1>
+                </div>
+            </div>
+        </div>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:5000');
+            socket.on('seconds.update', function (data) {
+                var time = new Date(data.time);
+                $('h1').text(
+                    time.getMonth() + '\/' + time.getDate() + '\/' + time.getFullYear() + ' ' +
+                    time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds());
+            });
+        </script>
+    </body>
+</html>

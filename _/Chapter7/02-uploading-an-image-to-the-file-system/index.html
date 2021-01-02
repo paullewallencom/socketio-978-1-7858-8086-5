@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+
+        <hr />
+        <input type="file" id="my-file" />
+        <hr />
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var socket = io.connect('http://localhost:5000');
+
+        var file = document.getElementById('my-file');
+
+        file.addEventListener('change', function () {
+            if (!file.files.length) {
+                return;
+            }
+
+            var firstFile = file.files[0],
+                reader = new FileReader();
+
+            reader.onloadend = function () {
+                socket.emit('upload-image', {
+                    name: firstFile.name,
+                    data: reader.result
+                });
+            };
+
+            reader.readAsArrayBuffer(firstFile);
+        });
+
+        socket.on('image-uploaded', function (message) {
+            var img = document.createElement('img');
+            img.setAttribute('src', message.name);
+            img.setAttribute('height', '100px');
+            document.body.appendChild(img);
+        });
+        </script>
+    </body>
+</html>

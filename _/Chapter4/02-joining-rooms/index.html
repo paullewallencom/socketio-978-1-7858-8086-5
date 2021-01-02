@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+
+        <div class="container">
+            <hr />
+
+            <button data-id="hallway" class="btn btn-lg btn-primary">Hallway</button>
+            <button data-id="red-room" class="btn btn-lg">Red Room</button>
+            <button data-id="green-room" class="btn btn-lg">Green Room</button>
+
+            <hr />
+
+            <ul id="messages"></ul>
+        </div>
+
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+
+        var socket = io('http://localhost:5000');
+
+        function appendGreeting (message) {
+            $('#messages').append(`<li>${message}</li>`);
+        }
+
+        socket.on('room.joined', appendGreeting);
+
+        $('button').on('click', function () {
+            var id = $(this).data('id');
+            if (!$(this).hasClass('btn-primary')) {
+                $(this).addClass('btn-primary');
+                socket.emit('room.join', id);
+            }
+        });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <hr />
+        <div class="container">
+            <form id="personform">
+
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input name="firstname" id="firstname" class="form-control" />
+                    <small class="text-danger" id="firstname-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input name="lastname" id="lastname" class="form-control" />
+                    <small class="text-danger" id="lastname-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-primary">Save</button>
+                </div>
+
+            </form>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('localhost:5000');
+
+            socket.on('person.save.success', function (data) {
+                console.log('success', data);
+                alert(`${data.firstname} ${data.lastname} was successfully saved`);
+            });
+
+            socket.on('person.save.error', function (data) {
+                for (var i in data) {
+                    if (data.hasOwnProperty(i)) {
+                        document.getElementById(i + '-error').innerHTML = data[i];
+                    }
+                }
+            });
+
+            document.getElementById('personform').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var person = {
+                    firstname: document.getElementById('firstname').value,
+                    lastname: document.getElementById('lastname').value
+                };
+                for (var i in person) {
+                    document.getElementById(i + '-error').innerHTML = '';
+                }
+
+                socket.emit('person.save', person);
+            });
+        </script>
+    </body>
+</html>

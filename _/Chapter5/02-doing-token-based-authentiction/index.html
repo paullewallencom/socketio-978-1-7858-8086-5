@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+      <div id="main-container"></div>
+
+      <script src="/socket.io/socket.io.js"></script>
+
+      <script>
+      var socket = io.connect('http://localhost:5000');
+
+      function renderTemplate (template, data) {
+        document.getElementById('main-container').innerHTML = templates[template](data);
+      }
+
+      function renderLoggedOut () {
+        renderTemplate('loggedOut');
+        document.getElementById('login').addEventListener('click', function (e) {
+          socket.emit('login');
+        });
+      }
+
+      function renderLoggedIn (data) {
+        renderTemplate('loggedIn', data);
+        document.getElementById('logout').addEventListener('click', function (e) {
+          delete localStorage.jwtToken;
+          renderLoggedOut();
+        });
+      }
+
+      var templates = {
+        loggedOut: function () {
+          return `
+            <div>
+              <h1>You are not logged in.</h1>
+              <button id="login">Login</button>
+            </div>
+          `;
+        },
+
+        loggedIn: function (data) {
+          return `
+            <div>
+              <h1>You are logged in as ${data.firstName} ${data.lastName}.</h1>
+              <button id="logout">Logout</button>
+            </div>
+          `;
+        }
+      };
+
+      socket.on('profile.success', function (data) {
+        renderLoggedIn(data);
+      });
+
+      socket.on('profile.error', function (err) {
+        renderLoggedOut();
+      });
+
+      socket.on('login.success', function (data) {
+        localStorage.jwtToken = data.token;
+      });
+
+      if (localStorage.jwtToken) {
+        socket.emit('profile', {
+          token: localStorage.jwtToken
+        });
+
+      } else {
+        renderLoggedOut();
+      }
+
+      </script>
+  </body>
+</html>

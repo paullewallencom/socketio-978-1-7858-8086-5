@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row bg-primary">
+                <div class="col-md-4">
+                    <h1 id="users-count">0</h1>
+                    <p>Users</p>
+                </div>
+                <div class="col-md-4">
+                    <h1 id="posts-count">0</h1>
+                    <p>Posts</p>
+                </div>
+                <div class="col-md-4">
+                    <h1 id="comments-count">0</h1>
+                    <p>Comments</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="text-primary">Recent Comments</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-comments">
+                            <!-- Recent Comments -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="text-primary">Recent Posts</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Title</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-posts">
+                            <!-- Recent Posts -->
+                        </tbody>
+                    </table>
+                </div>
+            <div>
+        </div>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:5000');
+
+            // Update the users count
+            socket.on('users.count', function (data) {
+                $('#users-count').text(data.count);
+            });
+
+            // Update the comments count
+            socket.on('comments.count', function (data) {
+                $('#comments-count').text(data.count);
+            });
+
+            // Updae the posts count
+            socket.on('posts.count', function (data) {
+                $('#posts-count').text(data.count);
+            });
+
+            // Add a comment
+            socket.on('comment.add', function (data) {
+                var $row = $('<tr>' +
+                    '<td>' + data.user + '</td>' +
+                    '<td>' + data.comment + '</td>' +
+                '</tr>');
+                $('#recent-comments').append($row);
+            });
+
+            // Add a post
+            socket.on('post.add', function (data) {
+                var $row = $('<tr>' +
+                    '<td>' + data.user + '</td>' +
+                    '<td>' + data.title + '</td>' +
+                '</tr>');
+                $('#recent-posts').append($row);
+            });
+        </script>
+    </body>
+</html>

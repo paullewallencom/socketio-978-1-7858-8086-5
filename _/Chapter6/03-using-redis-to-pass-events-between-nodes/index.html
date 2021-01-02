@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redis</title>
+  </head>
+  <body>
+
+    <div id="messages"></div>
+
+    <button id="broadcast">Broadcast</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+    // The port number needs to be dynamic so we can
+    // Use this page on any port
+    var port = window.location.port,
+        socket = io.connect('http://localhost:' + port);
+
+    // Add new messages to the list
+    socket.on('message.received', function (port) {
+      var message = document.createElement('div');
+      message.innerHTML = `Received message from port ${port}`;
+      document.getElementById('messages').appendChild(message);
+    });
+
+    // When the "broadcast" button is clicked,
+    // We will send a message to the server to render the message
+    document.getElementById('broadcast').addEventListener('click', function () {
+      socket.emit('message.sent', port);
+    });
+
+    </script>
+  </body>
+</html>

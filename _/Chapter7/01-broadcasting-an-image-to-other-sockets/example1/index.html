@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <img id="img-stream2" src="" />
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var socket = io.connect('http://localhost:5000');
+
+        var imgChunks = [];
+
+        socket.on('img-chunk', function (chunk) {
+            var img = document.getElementById('img-stream2');
+            imgChunks.push(chunk);
+            img.setAttribute('src', 'data:image/jpeg;base64,' + window.btoa(imgChunks));
+        });
+        </script>
+    </body>
+</html>

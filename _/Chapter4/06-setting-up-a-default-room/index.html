@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <form id="message-form">
+                <p>
+                    <label>Message</label>
+                    <textarea id="message" class="form-control input-message"></textarea>
+                </p>
+                <p>
+                    <label>Send To</label>
+                    <select id="send-to" class="form-control">
+                        <!-- This will be populated by JavaScript -->
+                    </select>
+                </p>
+                <button class="btn btn-primary" type="submit">Send</button>
+            </form>
+            <div id="messages"></div>
+        </div>
+
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:5000');
+
+            function messageSent (data) {
+                $('#messages').prepend(`
+                    <p>
+                        <hr />
+                        <strong>${data.id}</strong><br />
+                        ${data.message}
+                    </p>
+                `);
+            }
+
+            socket.on('socket.joined', function (user) {
+                $('#send-to').append(`<option>${user.userId}</option>`);
+            });
+
+            socket.on('message.sent', messageSent);
+
+            $(function () {
+                $('#message-form').on('submit', function (e) {
+                    e.preventDefault();
+                    messageSent({
+                        id: 'Message Sent to ' +  $('#send-to').val(),
+                        message: $('#message').val()
+                    });
+                    socket.emit('message.send', {
+                        id: $('#send-to').val(),
+                        message: $('#message').val()
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

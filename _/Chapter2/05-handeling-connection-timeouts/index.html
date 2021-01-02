@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <p>Open up your developer console, kill your server and let the fun begin!</p>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:5000', {
+                'reconnection': true,
+                'reconnectionDelay': 500,
+                'reconnectionAttempts': 5
+            });
+
+            // If the server comes back, we'll be able to get a new connection
+            socket.on('reconnect', function (number) {
+                console.info('After attempting ' + number + ' times, we finally reconnected!');
+            });
+
+            // This event fires every time we ping the server for a reconnection
+            socket.on('reconnect_attempt', function (number) {
+                console.info('Reconnect attempt number ' + number);
+            });
+
+            // If we have an error connecting, this event will fire
+            socket.on('connect_error', function () {
+                console.warn('Error connecting to Socket.IO');
+            });
+
+            // If we fail to reconnect, this event will fire
+            socket.on('reconnect_failed', function () {
+                console.error('We failed to reconnect to Socket.IO. We give up.');
+            });
+        </script>
+    </body>
+</html>

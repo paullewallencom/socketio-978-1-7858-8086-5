@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="http://bootswatch.com/paper/bootstrap.min.css">
+        <title>Taps</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>What is your favorite color?</h1>
+            <p>
+                <button data-id="1" class="btn btn-primary btn-lg btn-block">Blue</button>
+            </p>
+            <p>
+                <button data-id="2" class="btn btn-success btn-lg btn-block">Green</button>
+            </p>
+            <p>
+                <button data-id="3" class="btn btn-danger btn-lg btn-block">Red</button>
+            </p>
+
+            <h1 id="location-name"></h1>
+            <h2 id="weather-main"></h2>
+            <p id="weather-description"></p>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="http://localhost:5000/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            var socket = io('http://localhost:5000');
+
+            var buttons = document.querySelectorAll('button');
+
+            for (var i = 0; i < buttons.length; i++) {
+               buttons[i].addEventListener('click', function (e) {
+                   
+                   var body = document.querySelector('body'),
+                       index = e.target.getAttribute('data-id'),
+                       backgroundColor;
+
+                   socket.emit('button-tap', index);
+
+                   switch (index) {
+                       case '1':
+                            backgroundColor = 'bg-primary';
+                       break;
+                       case '2':
+                            backgroundColor = 'bg-success';
+                       break;
+                       case '3':
+                            backgroundColor = 'bg-danger';
+                       break;
+                   }
+
+                   body.setAttribute('class', backgroundColor);
+               });
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+
+        <div class="container">
+
+            <!-- Login Form -->
+            <form id="login">
+                <div class="row">
+                    <div class="col-md-9">
+                        <input class="form-control" placeholder="Password" type="password" />
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary form-control">Login</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Message -->
+            <form id="message" style="display: none">
+                <div class="row">
+                    <div class="col-md-9">
+                        <input class="form-control" placeholder="Message" />
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary form-control">Send</button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="messages"></div>
+        </div>
+
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        var socket = io('http://localhost:5000');
+
+        // Render messages from the server
+        function renderMessage (data) {
+            $('#messages').prepend(`<div class="text-${data.type}">
+                <hr />
+                <p>${data.message}</p>
+            </div>`);
+        }
+
+        socket.on('message.posted', renderMessage);
+
+        // Toggle the messages and login form when the socket logs in
+        socket.on('join.group.success', function () {
+            $('#message').show();
+            $('#login').hide();
+            renderMessage({
+                type: 'success',
+                message: 'You have logged in'
+            });
+        });
+
+        $(function () {
+
+            // Attempt to log in
+            $('#login').on('submit', function (e) {
+                e.preventDefault();
+                var password = $(this).find('input').val();
+                socket.emit('join.group', {
+                    password: password
+                });
+            });
+
+            // Send a message
+            $('#message').on('submit', function (e) {
+                e.preventDefault();
+                var message = $(this).find('input').val();
+                socket.emit('message.post', {
+                    message: message
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

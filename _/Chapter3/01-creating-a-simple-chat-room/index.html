@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <div class="container">
+            <form id="message-form">
+                <p>
+                    <label>Username</label>
+                    <input class="form-control" id="username" />
+                </p>
+                <p>
+                    <label>Message</label>
+                    <textarea class="form-control" id="message"></textarea>
+                </p>
+                <button class="btn btn-primary" type="submit">Send</button>
+            </form>
+            <div id="messages"></div>
+        </div>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+        var socket = io('http://localhost:5000');
+
+        // Update the users count
+        socket.on('message.sent', function (data) {
+            $('#messages').prepend(`
+                <div>
+                    <hr />
+                    <div><strong>${data.username}</strong></div>
+                    <p>${data.message}</p>
+                </div>
+            `);
+        });
+
+        $(function () {
+            $('#message-form').on('submit', function (e) {
+                e.preventDefault();
+                socket.emit('message.send', {
+                    message: $('#message').val(),
+                    username: $('#username').val()
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

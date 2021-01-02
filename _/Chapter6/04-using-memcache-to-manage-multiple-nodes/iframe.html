@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Memcached</title>
+  </head>
+  <body>
+
+    <h1>This iframe is on port #<span id="port-number"></span></h1>
+
+    <div id="messages"></div>
+
+    <hr>
+
+    <button id="broadcast">Broadcast</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+    // The port number needs to be dynamic so we can
+    // Use this page on any port
+    var port = window.location.port,
+        socket = io.connect('http://localhost:' + port);
+
+    document.getElementById('port-number').innerHTML = port;
+
+    // Add new messages to the list
+    socket.on('message.received', function (port) {
+      var message = document.createElement('div');
+      message.innerHTML = `Received message from port ${port}`;
+      document.getElementById('messages').appendChild(message);
+    });
+
+    // When the "broadcast" button is clicked,
+    // We will send a message to the server to render the message
+    document.getElementById('broadcast').addEventListener('click', function () {
+      socket.emit('message.sent', port);
+    });
+
+    </script>
+  </body>
+</html>
